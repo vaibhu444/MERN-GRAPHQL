@@ -14,6 +14,8 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import mergedResolver from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
+import { connectDb } from './db/connectDb.js'
+
 
 dotenv.config()
 // Required logic for integrating with Express
@@ -39,5 +41,7 @@ app.use(
 
 // Modified server startup
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+// connect mongo db
+await connectDb()
 
 console.log(`🚀 Server ready at http://localhost:4000/`);
