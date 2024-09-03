@@ -51,7 +51,7 @@ app.use(
 )
 
 app.use(passport.initialize())
-app.use(passport.session)
+app.use(passport.session())
 
 const server = new ApolloServer({
     typeDefs: mergedTypeDefs,
@@ -62,7 +62,7 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-    '/',
+    '/graphql',
     cors({
         origin: 'http://localhost:3000',
         credentials: true
@@ -78,4 +78,4 @@ await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 // connect mongo db
 await connectDb()
 
-console.log(`🚀 Server ready at http://localhost:4000/`);
+console.log(`🚀 Server ready at http://localhost:4000/graphql`);

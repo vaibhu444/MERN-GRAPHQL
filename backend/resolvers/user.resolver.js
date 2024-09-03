@@ -3,9 +3,10 @@ import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 const userResolver = {
     Mutation:{
-        signup: async(_,{input}, context)=>{
+        signUp: async(_,{input}, context)=>{
             try {
                 const {username, name, password, gender} = input;
+                
                 if(!username || !name || !password || !gender){
                     throw new Error('All Fields Are Required');
                 }
@@ -13,8 +14,8 @@ const userResolver = {
                 if (existingUser){
                     throw new Error('User already exist')
                 }
-                const salt = bcrypt.genSalt(10);
-                const hashedPassword = bcrypt.hash(password, salt);
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(password, salt);
 
                 // https://avatar-placeholder.iran.liara.run/
 				const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
@@ -38,6 +39,7 @@ const userResolver = {
         login: async(_,{input}, context)=>{
             try {
                 const {username,password} = input;
+                if (!username || !password) throw new Error('All Fields Requiered')
                 const {user} = await context.authenticate('graphql-local',{username, password});
                 await context.login(user);
                 return user;
@@ -49,10 +51,10 @@ const userResolver = {
         logout: async(_, args, context)=>{
             try {
                 await context.logout();
-                req.session.destroy((err)=>{
+                context.req.session.destroy((err)=>{
                     if (err) throw err;
                 });
-                res.clearCookie('connect.sid');
+                context.res.clearCookie('connect.sid');
                 return {message: 'Log Out Successfull'}
                 
             } catch (error) {
@@ -83,7 +85,6 @@ const userResolver = {
         }
 
     },
-    // TODO => add user/transaction relation
 }
 
 export default userResolver;

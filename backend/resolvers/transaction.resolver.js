@@ -24,7 +24,7 @@ const transactionResolver = {
                 throw new Error('error in getting transaction')
             }
         },
-        // TODO => add categories statistic  query
+       
     },
     Mutation: {
         createTransaction: async(_,{input},context)=>{
@@ -61,7 +61,6 @@ const transactionResolver = {
             
         }
 
-        // TODO => add transaction/user relation
     }
 }
 
