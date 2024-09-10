@@ -7,8 +7,9 @@ import TransactionForm from "../components/TransactionForm";
 import { MdLogout } from "react-icons/md";
 import toast from "react-hot-toast";
 import { LOG_OUT } from "../graphql/mutations/user.mutation";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "../graphql/queries/user.query";
+import { GET_TRANSACTION_STATISTICS } from "../graphql/queries/transaction.query";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -29,7 +30,7 @@ const HomePage = () => {
 		],
 	};
 
-	const [logout, {loading}] = useMutation(LOG_OUT,
+	const [logout, {loading, client}] = useMutation(LOG_OUT,
 		{
 			refetchQueries: [GET_AUTHENTICATED_USER]
 		} 
@@ -37,11 +38,16 @@ const HomePage = () => {
 	const handleLogout = async() => {
 		try {
 			await logout()
+			client.resetStore();
 		} catch (error) {
 			console.error('Error Logging out:', error)
 			toast.error(error.message)
 		}
 	};
+
+
+	const {data} = useQuery(GET_TRANSACTION_STATISTICS);
+	
 
 
 	return (
@@ -64,7 +70,6 @@ const HomePage = () => {
 					<div className='h-[330px] w-[330px] md:h-[360px] md:w-[360px]  '>
 						<Doughnut data={chartData} />
 					</div>
-
 					<TransactionForm />
 				</div>
 				<Cards />

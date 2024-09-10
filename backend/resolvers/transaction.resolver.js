@@ -24,6 +24,22 @@ const transactionResolver = {
                 throw new Error('error in getting transaction')
             }
         },
+        categoryStatistics: async(_, {input} ,context)=>{
+            if(!context.getUser()) throw new Error('Unauthorized');
+            const userId = context.getUser()._id;
+            const transactions = await Transaction.find({
+                userId
+            });
+
+            let categoryMap = {}
+            transactions.forEach((transaction)=>{
+                if(!categoryMap[transaction.category]){
+                    categoryMap[transaction.category]=0
+                }
+                categoryMap[transaction.category]+=transaction.amount;
+            });
+            return Object.entries(categoryMap).map(([category, totalAmountPerCategoty])=>({category, totalAmountPerCategoty}))
+        }
        
     },
     Mutation: {
@@ -50,16 +66,16 @@ const transactionResolver = {
             }
             
         },
-        deleteTransaction: async(_,{input}, context)=>{
+        deleteTransaction: async(_,{transactionId}, context)=>{
             try {
-                const deletedTransaction = await Transaction.findByIdAndDelete(input.transactionId);
+                const deletedTransaction = await Transaction.findByIdAndDelete(transactionId);
                 return deletedTransaction;
             } catch (error) {
                 console.error("error in deleting transaction : ", error)
                 throw new Error('error in deleting transaction')
             }
             
-        }
+        },
 
     }
 }
