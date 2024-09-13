@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { formatDate } from "../utils/formateDate";
 import {useMutation} from "@apollo/client"
 import { DELETE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
-import { GET_TRANSACTIONS } from "../graphql/queries/transaction.query";
+import { GET_TRANSACTION_STATISTICS, GET_TRANSACTIONS } from "../graphql/queries/transaction.query";
 import toast from "react-hot-toast";
 
 const categoryColorMap = {
@@ -18,7 +18,7 @@ const categoryColorMap = {
 	// Add more categories and corresponding color classes as needed
 };
 
-const Card = ({transaction}) => {
+const Card = ({transaction, authUser}) => {
 	let { category, amount, description, location, date, paymentType} = transaction;
 	const cardClass = categoryColorMap[category];
 	description = description[0]?.toUpperCase() + description.slice(1);
@@ -28,7 +28,7 @@ const Card = ({transaction}) => {
 	const formatedDate = formatDate(date);
 
 	const [ deleteTransaction, {loading}] = useMutation(DELETE_TRANSACTION, {
-		refetchQueries: [GET_TRANSACTIONS]
+		refetchQueries: [GET_TRANSACTIONS, GET_TRANSACTION_STATISTICS]
 	})
 	
 	const handleDelete = async() =>{
@@ -73,7 +73,7 @@ const Card = ({transaction}) => {
 				<div className='flex justify-between items-center'>
 					<p className='text-xs text-black font-bold'>{formatedDate}</p>
 					<img
-						src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
+						src={authUser?.profilePicture}
 						className='h-8 w-8 border rounded-full'
 						alt=''
 					/>
